@@ -252,6 +252,6 @@ const AVOutputFormat ff_rtsp_muxer = {
     .write_header      = rtsp_write_header,
     .write_packet      = rtsp_write_packet,
     .write_trailer     = rtsp_write_close,
-    .flags             = AVFMT_NOFILE | AVFMT_GLOBALHEADER,
+    .flags             = AVFMT_NOFILE,
     .priv_class        = &rtsp_muxer_class,
 };
