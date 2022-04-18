@@ -83,6 +83,8 @@ const AVCodecHWConfigInternal *const ff_nvenc_hw_configs[] = {
 #define IS_GBRP(pix_fmt) (pix_fmt == AV_PIX_FMT_GBRP || \
                           pix_fmt == AV_PIX_FMT_GBRP16)
 
+extern int g_keyFrameRequest;
+
 static const struct {
     NVENCSTATUS nverr;
     int         averr;
@@ -2408,6 +2410,12 @@ static int nvenc_send_frame(AVCodecContext *avctx, const AVFrame *frame)
                 ctx->forced_idr ? NV_ENC_PIC_FLAG_FORCEIDR : NV_ENC_PIC_FLAG_FORCEINTRA;
         } else {
             pic_params.encodePicFlags = 0;
+        }
+
+        if (g_keyFrameRequest) {
+            av_log(ctx, AV_LOG_ERROR, "Client requests an IDR\n");
+            pic_params.encodePicFlags = NV_ENC_PIC_FLAG_FORCEIDR;
+            g_keyFrameRequest = 0;
         }
 
         pic_params.inputTimeStamp = frame->pts;
