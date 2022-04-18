@@ -76,6 +76,7 @@
     { "buffer_size",        "Underlying protocol send/receive buffer size",                  OFFSET(buffer_size),           AV_OPT_TYPE_INT, { .i64 = -1 }, -1, INT_MAX, DEC|ENC }, \
     { "pkt_size",           "Underlying protocol send packet size",                          OFFSET(pkt_size),              AV_OPT_TYPE_INT, { .i64 = 1472 }, -1, INT_MAX, ENC } \
 
+int g_keyFrameRequest;
 
 const AVOption ff_rtsp_options[] = {
     { "initial_pause",  "do not start playing the stream immediately", OFFSET(initial_pause), AV_OPT_TYPE_BOOL, {.i64 = 0}, 0, 1, DEC },
@@ -1269,13 +1270,17 @@ start:
         const char* ptr = buf;
 
         if (!strcmp(reply->reason, "OPTIONS") ||
-            !strcmp(reply->reason, "GET_PARAMETER")) {
+            !strcmp(reply->reason, "GET_PARAMETER") ||
+            !strcmp(reply->reason, "REQUEST_KEY_FRAME")) {
             snprintf(buf, sizeof(buf), "RTSP/1.0 200 OK\r\n");
             if (reply->seq)
                 av_strlcatf(buf, sizeof(buf), "CSeq: %d\r\n", reply->seq);
             if (reply->session_id[0])
                 av_strlcatf(buf, sizeof(buf), "Session: %s\r\n",
                                               reply->session_id);
+            if (!strcmp(reply->reason, "REQUEST_KEY_FRAME")) {
+                g_keyFrameRequest = 1;
+            }
         } else {
             snprintf(buf, sizeof(buf), "RTSP/1.0 501 Not Implemented\r\n");
         }

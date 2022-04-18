@@ -118,6 +118,8 @@ typedef struct X264Context {
     int roi_warned;
 } X264Context;
 
+extern int g_keyFrameRequest;
+
 static void X264_log(void *p, int level, const char *fmt, va_list args)
 {
     static const int level_map[] = {
@@ -368,6 +370,10 @@ static int X264_frame(AVCodecContext *ctx, AVPacket *pkt, const AVFrame *frame,
         default:
             x4->pic.i_type = X264_TYPE_AUTO;
             break;
+        }
+        if (g_keyFrameRequest) {
+            x4->pic.i_type = X264_TYPE_IDR;
+            g_keyFrameRequest = 0;
         }
         reconfig_encoder(ctx, frame);
 
