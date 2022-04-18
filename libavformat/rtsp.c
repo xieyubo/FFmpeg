@@ -1279,6 +1279,7 @@ start:
                 av_strlcatf(buf, sizeof(buf), "Session: %s\r\n",
                                               reply->session_id);
             if (!strcmp(reply->reason, "REQUEST_KEY_FRAME")) {
+                av_log(s, AV_LOG_ERROR, "[rtsp] client request a key frame\n");
                 g_keyFrameRequest = 1;
             }
         } else {

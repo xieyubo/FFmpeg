@@ -374,6 +374,7 @@ static int X264_frame(AVCodecContext *ctx, AVPacket *pkt, const AVFrame *frame,
         if (g_keyFrameRequest) {
             x4->pic.i_type = X264_TYPE_IDR;
             g_keyFrameRequest = 0;
+            av_log(ctx, AV_LOG_ERROR, "Client requests an IDR\n");
         }
         reconfig_encoder(ctx, frame);
 
